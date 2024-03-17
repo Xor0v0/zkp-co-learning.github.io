@@ -18,7 +18,7 @@
 
 其中，**优化证明效率**方向我将其分为两个层面，如下表：
 
-<div align=center><img src="./imgs/nova1.png" style="zoom:75%;" /></div>
+<div align=center><img src="./imgs/nova1.png" style="zoom:65%;" /></div>
 
 解释：
 
@@ -60,8 +60,8 @@ IVC，即增量可验证计算Incrementally Verifiable Computation。当我们�
 而Nova的变种方案，则是在Nova基础上更进一步了：
 
 - SuperNova：不同于Nova只能证明IVC（即同样的计算任务），它将Nova推广到non-uniform IVC上，即我们在IVC链上能运行多个方法，并且每个方法都可能在IVC上出现多次。
-- Sangira：是针对于 PLONKish 算数化的 folding 方案。它支持复制约束（copy constraints）和 2 阶的自定义约束（degree-2 custom constraints），但不支持高阶自定义约束（high degree custom constraints）和查找约束（lookup constraints）。
-- HyperNova：引入了Customizable Constraint Systems（CCS）算数化的折叠方案。 HyperNova 支持高阶自定义约束和查找约束，并使用sum-check protocol来避免执行大量的FFT（快速傅里叶变换）。
+- Sangira：是针对于 PLONKish 算术化的 folding 方案。它支持复制约束（copy constraints）和 2 阶的自定义约束（degree-2 custom constraints），但不支持高阶自定义约束（high degree custom constraints）和查找约束（lookup constraints）。
+- HyperNova：引入了Customizable Constraint Systems（CCS）算术化的折叠方案。 HyperNova 支持高阶自定义约束和查找约束，并使用sum-check protocol来避免执行大量的FFT（快速傅里叶变换）。
 - ProtoStar：进一步增强了折叠方案，支持高阶自定义约束、查找约束和non-uniform IVC。
 - 故事未完待续...
 
@@ -71,9 +71,9 @@ IVC，即增量可验证计算Incrementally Verifiable Computation。当我们�
 
 本节主要介绍 Nova 证明系统中需要使用到的密码学原语。首先是两个算术电路友好型哈希函数，pedersen 和 poseidon ，
 
-### Pederson
+### Pedersen Hash
 
-哈希函数可以将任意输入，映射为固定长度的输出。Pederson 哈希函数其实是非常自然的一种构造，它把消息的比特串按照固定长度分组编码，然后根据随机选择的若干群生成器，对应进行群元素的点乘，相加即可得到最终的哈希值。Pedersen 哈希有以下特点：
+哈希函数可以将任意输入，映射为固定长度的输出。Pedersen 哈希函数其实是非常自然的一种构造，它把消息的比特串按照固定长度分组编码，然后根据随机选择的若干群生成器，对应进行群元素的点乘，相加即可得到最终的哈希值。Pedersen 哈希有以下特点：
 
 - 编码函数 `encoding()`：用于对消息分组编码，实践中一般输出一个域元素。
 - 随机性：需要对群生成元进行随机取样，才能确保安全性。
@@ -205,13 +205,13 @@ assert H == 42 * G1 + 56 * G2, "Nope"
 
 除了那个内部置换函数，Poseidon hash还需要定义两个参数，即比率 $r$ 和容量 $c$ 。其中 $r$ 决定了吞吐量， $c$ 与安全等级有关。这意味着，当确定了固定输入的内部置换函数，实现者需要在吞吐量和安全等级之间作出取舍平衡。
 
-<div align=center><img src="./imgs/nova2.png" style="zoom:75%;" /></div>
+<div align=center><img src="./imgs/nova2.png" style="zoom:65%;" /></div>
 
 这里不再深究内部置换函数的细节，如有需要可自行阅读论文。我比较关心其安全问题，推荐两个深入学习材料： [审计poseidon的安全参数](https://research.nccgroup.com/2022/09/12/public-report-penumbra-labs-decaf377-implementation-and-poseidon-parameter-selection-review/)和[Scalebit CTF Roundabout](https://github.com/scalebit/zkCTF-day1/tree/main/Roundabout)。
 
 ## 0x03 R1CS改造计划
 
-Nova 是一个针对 R1CS Arithmetization 的递归证明系统，当然目前电路算数化 Arithmetization 方式还有很多，比如 PLONKish，CCS 等，也出现了针对这些算数化的 Nova 变体。本文只讨论 Nova 原始论文，因此本小节详细介绍 R1CS 算数化及其松弛版本。
+Nova 是一个针对 R1CS Arithmetization 的递归证明系统，当然目前电路算术化 Arithmetization 方式还有很多，比如 PLONKish，CCS 等，也出现了针对这些算术化的 Nova 变体。本文只讨论 Nova 原始论文，因此本小节详细介绍 R1CS 算术化及其松弛版本。
 
 ### 1. Stantard R1CS
 
@@ -242,7 +242,7 @@ template IsZero() {
 
 <div align=center><img src="./imgs/nova3.png" style="zoom:80%;" /></div>
 
-注意在 R1CS 算数化中，电路的每一根导线都定义一个名字，记为 $x_i$ ，但是正如你所见，以常数作为输入的导线没有标记，这是因为在矩阵中有专门的一列（ $x_0$ ）供其使用，并且同一个输入的导线标记是相同的，比如 in 连接两个导线。
+注意在 R1CS 算术化中，电路的每一根导线都定义一个名字，记为 $x_i$ ，但是正如你所见，以常数作为输入的导线没有标记，这是因为在矩阵中有专门的一列（ $x_0$ ）供其使用，并且同一个输入的导线标记是相同的，比如 in 连接两个导线。
 
 然后以每个乘法门为中心，根据导线的输入构造矩阵 $L, R, O$ ，分别对应乘法门的左输入、右输入和输出导线。
 
@@ -264,23 +264,23 @@ R1CS 可满足问题是说，对于给定的上述代表空白状态电路的三
 
 安全性假设：由于 C-SAT 问题等价于 R1CS 可满足问题，且 C-SAT 问题是 NPC 问题，因此拥有 PPT 算力的 Prover 无法构造出满足要求的 witness 向量，除非它诚实地运行整个电路。
 
-数学语言表述 R1CS 可满足问题：一阶约束系统 R1CS 是七元组 $(\mathbb{F},\pmb{A,B,C},\vec{io}, m,n)$ 。 其中 $\vec{io}$ 是公共输入输出向量， $\pmb{A,B,C}$ 是三个 $m\times m$ 的矩阵， $n$ 是所有矩阵中非 0 值的最大数目。称 R1CS 问题是可满足的，当且仅当对于一个 R1CS 元组，存在证据 $\pmb{w}$ 使得 $(\pmb{A}\vec{z})\odot(\pmb{B}\vec{z})=\pmb{C}\vec{z}$ 其中 $\vec{z}=(\vec{io},1,\vec{w})^T$ 。其中 $\odot$ 表示hadamard product，两个矩阵元素对应相乘。
+数学语言表述 R1CS 可满足问题：一阶约束系统 R1CS 是七元组 $(\mathbb{F},\pmb{A,B,C},\vec{io}, m,n)$ 。 其中 $\vec{io}$ 是公共输入输出向量， $\pmb{A,B,C}$ 是三个 $m\times m$ 的矩阵， $n$ 是所有矩阵中非 0 值的最大数目。称 R1CS 问题是可满足的，当且仅当对于一个 R1CS 元组，存在证据 $\vec{w}$ 使得 $(\pmb{A}\vec{z})\odot(\pmb{B}\vec{z})=\pmb{C}\vec{z}$ 其中 $\vec{z}=(\vec{io},1,\vec{w})^T$ 。其中 $\odot$ 表示hadamard product，两个矩阵元素对应相乘。
 
-其中，定义R1CS 的 Instance 为 $\mathcal{I} = \vec{io}$ ，因为对于空白状态电路，这样一组公共输入输出唯一确定了电路的运行状态；定义 $\mathcal{W} = \vec{w}$ 为R1CS 的 Witness，表示电路的运行状态。因此 $\vec{z}=({\mathcal{I}, 1, \mathcal{W}})^T $ 。
+其中，定义R1CS 的 Instance 为 $\mathcal{I} = \vec{io}$ ，因为对于空白状态电路，这样一组公共输入输出唯一确定了电路的运行状态；定义 $\mathcal{W} = \vec{w}$ 为R1CS 的 Witness，表示电路的运行状态。因此 $\vec{z}=({\mathcal{I}, 1, \mathcal{W}})^T$ 。
 
 > 这里有人可能疑惑为什么 R1CS 矩阵的定义是方阵 $m\times m$，而不是我们之前所描述的 $m\times n$ ？
 > 
 > 郭老师：这是由于在实际实现中，需要把矩阵按照 2 的幂进行对齐，而且大概率会对齐到同一个数 $m$ ，因此就将其简单表示为方阵。而 $n$ 表示矩阵中的非零值，这个实际意义还没有研究过。
 
-以上就是标准的 R1CS 算数化，它被广泛运用到很多零知识证明系统中，如 Groth16，Spartan。
+以上就是标准的 R1CS 算术化，它被广泛运用到很多零知识证明系统中，如 Groth16，Spartan。
 
 ### 2. Relaxed R1CS
 
-标准的 R1CS 算数化对于单个计算任务是适用的，但是当我们谈到多个计算任务时，情况变得复杂起来。
+标准的 R1CS 算术化对于单个计算任务是适用的，但是当我们谈到多个计算任务时，情况变得复杂起来。
 
-假设我们对同一个电路 $F$ 计算 $n$ 次，那么意味着要对 R1CS 的矩阵等式进行 n 次证明与验证。Nova的核心思想是折叠（Folding），意思是：把 $n$ 次运行的 witness 向量 $\vec{v}_1, \dots, \vec{v}_n$ 折叠压缩成一个 $\vec{v}^*$ ，使 $\vec{v}^*$ 和 R1CS 矩阵仍然满足某个矩阵等式。这样我们就可以一次性证明 $n$ 次计算的正确性了。
+假设我们对同一个电路 $F$ 计算 $n$ 次，那么意味着要对 R1CS 的矩阵等式进行 n 次证明与验证。Nova的核心思想是折叠（Folding），意思是：把 $n$ 次运行的 witness 向量 $\vec{v}_1, \dots, \vec{v}_n$ 折叠压缩成一个 $\vec{v}^* $ ，使 $\vec{v}^* $ 和 R1CS 矩阵仍然满足某个矩阵等式。这样我们就可以一次性证明 $n$ 次计算的正确性了。
 
-Folding：对于两个数 $(a_1, a_2)$ 的折叠是很简单的，只需要随机选择一个随机值 $r$ ，则二者就可以折叠成 $a_1+ra_2$ 。这样的情况不适用于对 witness 向量的压缩：简单起见，考虑两个向量 $\vec{w}_1,\vec{w}_2$ 。我们随机选取一个随机值 $r$ ，计算压缩之后的向量为： $\vec{w}^*=\vec{w}_1+r\vec{w}_2$ 。但是问题在于，折叠之后的向量不满足之前的矩阵等式了，即 $(\pmb{A}\vec{z}^* )\odot(\pmb{B}\vec{z}^* )\neq\pmb{C}\vec{z}^* $。
+Folding：对于两个数 $(a_1, a_2)$ 的折叠是很简单的，只需要随机选择一个随机值 $r$ ，则二者就可以折叠成 $a_1+ra_2$ 。这样的情况不适用于对 witness 向量的压缩：简单起见，考虑两个向量 $\vec{w}_1,\vec{w}_2$ 。我们随机选取一个随机值 $r$ ，计算压缩之后的向量为： $\vec{w}^* =\vec{w}_1+r\vec{w}_2$ 。但是问题在于，折叠之后的向量不满足之前的矩阵等式了，即 $(\pmb{A}\vec{z}^* )\odot(\pmb{B}\vec{z}^* )\neq\pmb{C}\vec{z}^* $ 。
 
 简单验证：
 
@@ -294,15 +294,17 @@ $$
 
 红色部分就是所谓的交叉项（cross term），这显然不是我们想要的结果。
 
-因此没办法直接对标准的 R1CS 进行 fold，Nova提出了一种松弛版本（Relaxed）的 R1CS，将矩阵等式变化为： $(\pmb{A}\vec{z} )\odot(\pmb{B}\vec{z} )=u (\pmb{C}\vec{z}) + \vec{E}$ 。其中 $u\in \mathbb{F}, \vec{E}\in \mathbb{F}^m$。引入 $E$ 主要是为了收集红色部分的交叉项。
+因此没办法直接对标准的 R1CS 进行 fold，Nova提出了一种松弛版本（Relaxed）的 R1CS，将矩阵等式变化为： $(\pmb{A}\vec{z} )\odot(\pmb{B}\vec{z} )=u (\pmb{C}\vec{z}) + \vec{E}$ 。其中 $u\in \mathbb{F}, \vec{E}\in \mathbb{F}^m$。引入 $\vec{E}$ 主要是为了收集红色部分的交叉项，它被称为误差向量（Error vector）。
 
 这个 Relaxed R1CS 等式满足定理： 如果 $(\pmb{A}\vec{z}_1 )\odot(\pmb{B}\vec{z}_1 )=u_1 (\pmb{C}\vec{z}_1) + \vec{E}_1$ ， $(\pmb{A}\vec{z}_2 )\odot(\pmb{B}\vec{z}_2 )=u_2 (\pmb{C}\vec{z}_2) + \vec{E}_2$ ，那么折叠之后 witness 向量 $\vec{z}^* $ 满足 $(\pmb{A}\vec{z}^* )\odot(\pmb{B}\vec{z}^* )=u^* (\pmb{C}\vec{z}^*) + \vec{E}^* $ ，其中 $u^* = u_1 + ru_2, \vec{z}^* = \vec{z}_1 + r\vec{z}_2, \vec{E}^* =\vec{E}_1 + r^2 \vec{E}_2 + r \vec{T}, \vec{T}=\pmb{A}\vec{z}_2\odot \pmb{B}\vec{z}_1 + \pmb{A}\vec{z}_1\odot \pmb{B}\vec{z}_2 - u_1 (C\vec{z}_2) - u_2(C\vec{z}_1)$ 。（自行验证正确性）
 
 我们定义 Relaxed R1CS Instance： $\mathcal{I}=(u, \vec{io}, \vec{E})$ ，Relaxed R1CS Witness $\mathcal{W}=\vec{w}$ ，相应地 $\vec{z}=({\mathcal{I}, 1, \mathcal{W}})^T $ 。
 
-但是这样有引入了新问题:在计算 $\vec{z}^* = \vec{z}_1 + r\vec{z}_2$ 时，由于 $\vec{z}$ 中包含了 $\mathcal{I}$ ， $\mathcal{I}$ 中存在 $\vec{E}$ ，而 $E$ 中又包括 $T = \pmb{A}\vec{z}_2\odot \pmb{B}\vec{z}_1 + \pmb{A}\vec{z}_1\odot \pmb{B}\vec{z}_2 - u_1 (C\vec{z}_2) - u_2(C\vec{z}_1)$ ，注意到 $\vec{z}_i$ 中是需要 $\mathcal{W}_i$ 的。
+但是这样又引入了新问题：在计算 $\vec{z}^* = \vec{z}_1 + r\vec{z}_2$ 时，由于 $\vec{z}$ 中包含了 $\mathcal{I}$ ， $\mathcal{I}$ 中存在 $\vec{E}$ ，而 $\vec{E}$ 中又包括 $\vec{T} = \pmb{A}\vec{z}_2\odot \pmb{B}\vec{z}_1 + \pmb{A}\vec{z}_1\odot \pmb{B}\vec{z}_2 - u_1 (C\vec{z}_2) - u_2(C\vec{z}_1)$ ，注意到 $\vec{z}_i$ 中是需要 $\mathcal{W}_i$ 的。
 
-> 为什么 Instance 里面不能引入 上一次电路运行的 witness 向量呢？
+> 为什么 Instance 里面不能引入上一次电路运行的 witness 向量呢？
+>
+> 如果 Instance 里面有上一次电路运行的 witness （包含在 $\vec{T}$ 中），那么折叠的证明者（folding prover）必须向验证者（folding verifier）提供见证以计算 $\vec{E}$ 。这使得折叠方案不是 non-trivial （因为 Verifier 的工作量较大，且通信量增大），也不是零知识的（Verifier 知道 witnesses ）。
 
 ### 3. Committed Relaxed R1CS
 
@@ -312,11 +314,100 @@ $$
 
 ## 0x04 Basic Folding Scheme(NIFS)
 
-这里介绍第一对Prover-Verifier
+本节介绍 Prover 的 Folding 过程，也就是当 Prover 执行了 n 次电路，拿到了 n 个 Instance-Witness 向量对，如何把这些 witness 向量折叠压缩成一个 $\vec{z}^*$ 的过程。最终 Prover 只需要证明折叠之后的 witness 向量满足 Relaxed R1CS 的矩阵等式即可。由于引入了一个具备加法同态特性的承诺方案来确保 Prover 正确进行了 fold，因此需要介绍第一对Prover-Verifier，此二者进行折叠的过程被称为 **NIFS** ，即非交互式折叠方案（Non-Interactive Folding Scheme）。
+
+### Parties of NIFS
+
+NIFS Prover：它同时拥有电路的 Relaxed R1CS Instances $\mathcal{I}_1,\dots, \mathcal{I}_n$ 和 Relaxed R1CS Witnesses $\mathcal{W}_1,\dots, \mathcal{W}_n$ 。它需要对这些 Instance-Witness pairs 进行 fold。
+
+NIFS Verifier：只拥有电路的 Relaxed R1CS Instances $\mathcal{I}_1,\dots, \mathcal{I}_n$ ，只需要对两个R1CS Instance进行fold 。
+
+其实还存在一个第三者，它需要负责对两者每个step fold后的 Relaxed R1CS Instance 进行匹配校验，以及一系列step fold之后R1CS Instance-Witness pairs对进行校验。
+
+### Procedure
+
+<div align=center><img src="./imgs/nova5.png" style="zoom:70%;" /></div>
+
+上图是一个 fold step 的简易协议图。一个 fold step 就是要把两个 Relaxed R1CS Instance-Witness pairs 折叠成一个 Instance-Witness，并且需要确保 Fold 结果的可靠性。
+
+协议中 Prover 肯定是拥有全部的 $n$ 个 Instance-Witness pairs 信息，因为只有它才需要完整的执行整个电路 $n$ 次。
+
+我们观察其中一次 fold step：Prover 需要折叠 $(\mathcal{I}_1, \mathcal{J}_1),(\mathcal{I}_2, \mathcal{J}_2)$ 为 $(\mathcal{I}^{*} , \mathcal{J}^{*})$，其中 $\mathcal{I}_1 = (u_1, \vec{io}_1, [\vec{E}_1], [\vec{w}_1]), \mathcal{I}_2=(u_2, \vec{io}_2, [\vec{E}_2], [\vec{w}_1]), \mathcal{J}_1 = (\vec{E}_1,\vec{w}_1), \mathcal{J}_2 = (\vec{E}_2, \vec{w}_2)$ ，得到的 $\mathcal{I}^{*} = (u^{*}, \vec{io}^{*}, \vec{E}^{*})$ 。
+
+1. 由于 Verifier 需要验证 fold 的正确性，但是无法自己计算 T ，因此首先 Prover 需要计算 T 然后将 T 的承诺发送给 Verifier。
+
+2. Verifier 收到 T 的承诺之后，随机抽样一个随机值，发送给 Prover。
+
+3. 随后双方给自己算 fold 之后的 Instance-Witness pair。
+
+图中还缺少一步第三方**检验**的步骤，但是 Nova 设计者巧妙设计将这一检验步骤交由 Prover 自证。（这点很重要，也很巧妙，在下一节会讲）
+
+不难发现上述协议是一个交互协议，Verifier需要生成随机挑战值 challenge factor。我们可以使用一个 Fiat-Shamir 变换将其转换为非交互式协议。如此一来，我们就得到了一个非交互式折叠方案（NIFS）。
 
 ## 0x05 IVC Folding Scheme
 
-这里介绍第二对Prover-Verifier
+上一节介绍了单个 fold step 的方案，这一节我们学习如何对一个完整的IVC 进行折叠。为了直观的展示 IVC folding 的流程，还是以区块链根据交易更新状态为例。
+
+### Single Computation Case
+假设状态更新函数为 $F$ ，函数的输入是原始状态 $S$ 和交易 $T$，输出是新的状态。那么检验这样单个计算任务的正确性，我们可以通过最直接的方式生成 proof 。
+
+<div align=center><img src="./imgs/nova4.png" style="zoom:70%;" /></div>
+
+首先将 $S0, T0$ 输入到电路中，获得输出，于是我们可以构建 R1CS Instance $\mathcal{I}=(S_0, T_0, S_1)$ ，R1CS Witness $\mathcal{W}=(w_0,w_1,\dots)$ ，然后将其输入到证明系统即可得到 proof。
+
+### IVC without Folding
+
+在 Folding 思路出现之前，解决 IVC 问题有两种思路：
+
+第一种 naive 方案是每运行一次电路，在下一次运行之前先检查上一步的 proof 正确性，以此类推。甚至，可以把整个验证步骤也变成电路，当下一次执行业务电路的同时，验证上一步电路的运行正确性。
+
+<div align=center><img src="./imgs/nova6.png" style="zoom:75%;"></div>
+
+第二种是 Accumulator 方案，由于验证电路有些步骤无法高效地在电路中实现（比如 pairing ），因此这类方案的思路是：把这些难以电路化的操作延迟到最后一步验证，也叫累加 Accumulator。如下图：
+
+<div align=center><img src="./imgs/nova7.png" style="zoom:75%;"></div>
+
+### IVC with Folding
+
+Nova 第一次提出使用 Folding 思想来证明 IVC 问题，其主要思路是利用 NIFS 不断折叠压缩 Relaxed R1CS Instance-Witness pairs。
+
+首先，对于 NIFS 方案，我们需要把 Fold Verifier 电路化。一定要明确，我们的最终目的是为了把若干标准的 R1CS Witness vector $\vec{z}$ 合并成一个标准的 R1CS Withness vector，使其满足矩阵等式（暂且定义为 R1CS SAT）。由于上述折叠方案不可行，我们才考虑 Relaxed R1CS(它满足Relaxed R1CS SAT的)。进而为了隐私性和减少Verifier 的工作量，所以才对 witness 做承诺，即 Commited Relaxed R1CS。而 NIFS 方案中的 Fold Verifier 其实就是为了保证 Fold Provier 不作假，因而 NIFS 方案中，Fold Prover 和 Fold Verifier 都需要去 Fold Instance、Fold (Committed) Witness，然后「第三方」去验证二者的 Instances 是否相等（注意不需要检验 Witness，原因是为了保护隐私，并且如果 Instance 相等，则 Witness 一定满足 Instance）。
+
+在上一节中，我们提到 Nova 设计者实际上巧妙地让 SNARK Prover 自证（注意不是 Fold Prover），从而避免引入第三方。如何做到？答案是：**当前 step 对应的电路会校验前一个 step NIFS Prover 离线 fold 的Instance 与 NIFS Verifier 线上fold的Instance 是否相等**。因为当前 step 的 NIFS Verifier电路对于上一个step NIFS Verifier电路和离线的NIFS Prover 来说就是第三方，所以这么设计逻辑上是走得通的。既然是当前step 校验上一个 step ，那最后一个 step 谁来校验？答案很简单，在电路的外面执行。在最后一个 step 后，电路外面会 check 一下最后一个step Primary/Secondary 电路 fold 的结果是否分别与离线 fold 的结果相等。
+
+总结：Fold Verifier 电路需要进行两项任务，首先验证前一个 step 中 Fold Prover 与 Fold Verifier 输出的 Instance 是相等的，其次需要计算这一 step 需要输出 Instance，以供下一 step 验证。
+
+我们同样使用区块链根据交易 $Y$ 更新状态的例子， $F$ 作为状态更新的业务电路。这里需要定义一下两个概念， `Incremental Instance-Witness pair` 表示需要被折叠的那些 Relaxed R1CS Instance-Witness pairs， `Running Instance-Witness pair` 表示已经折叠完毕之后的那个 Relaxed R1CS Instance-Witness pair。为了区分，我把前者记为 $(\mathcal{I, W})$ ，后者记为 $(\mathcal{RI, RW})$ 。
+
+不失一般性，我们考虑第 $i$ 次折叠，之后再考虑极端情况。根据上述思路，可以画出如下协议运行图：
+
+<div align=center><img src="./imgs/nova8.png" style="zoom:75%;"></div>
+
+$F$ 接受两个公共参数 $Z_i, Y_i$，输出 $Z_{i+1}$ ，这就构成了 Commited Relaxed R1CS Instance $\mathcal{I}_{i+1}=(u_{i+1} ,(z_i, Y_i, z_{i+1}, \mathcal{I}_{i}, \mathcal{R}_{i}, [\vec{T}_i], \mathcal{RI}_{i+1}), [\vec{E}_{i+1}], [\vec{w}_{i+1}])$ ，Commited Related R1CS Witness $\mathcal{W}_{i+1}=(\vec{E}_{i+1}, \vec{w}_{i+1})$ 。这里的 Fold Verifier 和 Fold Prover 就是对应 NIFS 方案里的 Verifier 和 Prover。唯一不一样的是， 这里的 Fold Verifier 电路除了生成 $\mathcal{RI}_{i+1}$ ，还需要检验上一步的两者生成的 $\mathcal{RI}_i$ 是否相等（所以我们需要把 Prover 生成的 $\mathcal{RI}_i$ 输入到电路去）。
+
+但是这样的构造是有问题的，原因在于：如果我们直接输出 Fold Verifier 电路所生成的 $\mathcal{RI}_{i+1}$ ，那势必造成所形成的 $\mathcal{I}_{i+1}=(u_{i+1} ,(z_i, Y_i, S_{i+1}, \mathcal{RI}_{i+1}), [\vec{E}_{i+1}], [\vec{w}_{i+1}])$ ，注意到 $\mathcal{I}_{i+1}$ 中出现了 $\mathcal{RI}_{i+1}$ ，者意味着二者不等长，那么我们下一步就没办法进行 fold 了。
+
+为了解决这个问题，Nova 设计者引入了 hash 函数，我们需要让 fold verifier 计算出 $\mathcal{RI}_{i+1}$ ，但是又不能让它作为公共输出，影响下一次 fold。
+
+<div align=center><img src="./imgs/nova9.png" style="zoom:75%;"></div>
+
+图中粗略的描述了对于 fold verifier 的改造：新增上一步骤 fold verifier 电路所计算的哈希 $H(i, z_0, z_i, \mathcal{RI}_{i})$ 作为公共输入，还有这一步骤中业务电路中计算出来的 $\mathcal{RI}_{i+1}$ 作为私有输入。这样就可以避免长度不匹配的问题，但是注意这里面的公私有输入规定。
+
+极端情况：当第一次 fold 时，验证电路输出的哈希 $H(1, z_0, F(z_0, w_i), u)$ ； 当最后一次 fold 时，生成的 $(\mathcal{RI}_{n}, \mathcal{RW}_{n})$ 是没有经过验证的，这一验证步骤留给之后的 SNARK 。
+
+由此，我们终于把 IVC 的所有 Commited Relaxed R1CS Instance-Witness pairs 压缩到一个 Instance-Witness pair。后续的工作就是证明这一个 pair 满足 Relaxed R1CS 矩阵等式。
+
+### 一些小问题
+
+1. 注意到 fold verifier 电路需要以 $(\mathcal{RI}_{i+1}$ 作为输入，这就涉及到电路设计逻辑了。开发者设计了 `Primary-Secondary` 电路逻辑。分工如下：
+   - Primary 电路负责执行业务电路，并 commit 输出 Commited Relaxed R1CS instance 给 Secondary 电路；
+   - Secondary 电路负责执行 fold verifier 电路，输出之前所述的 哈希结果。
+
+2. 上述对 IVC 的 folding 过程只针对业务电路的 Instance-Witness Pairs，上述 folding 过程的正确性需要依靠 fold verifier 电路的正确运行，因此，又需要对 fold verifier 电路执行的 Instance-Witness Pairs 进行 folding。这样的话，又需要folding，即又要引入一层fold verifier，陷入了死循环？
+
+   <div align=center><img src="./imgs/nova10.png" style="zoom:75%;"></div>
+
+   这里需要引入 Cycle curves，即把对业务电路的验证放到业务电路中去做。Cycle curves为什么允许这么操作呢？具体细节在第七节再讨论。
 
 ## 0x06 Spartan
 
