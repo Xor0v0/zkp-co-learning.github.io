@@ -198,4 +198,4 @@ $$
 
 其中 $g_i$ 就对应“改进后”的低公共指数的 $m+2^kID$ 。它是一个低阶多项式，可以使用 coppersmith' method 找到那个根 $m$。
 
-不久我会单独整理一份 jupyter notebook 用于记录 RSA 加密系统中的那些“高明”的攻击技巧。
+我整理了一份 [jupyter notebook]() 用于记录 RSA 加密系统中的那些“高明”的攻击技巧。

@@ -211,7 +211,7 @@ assert H == 42 * G1 + 56 * G2, "Nope"
 
 ## 0x03 R1CS改造计划
 
-Nova 是一个针对 R1CS Arithmetization 的递归证明系统，当然目前电路算术化 Arithmetization 方式还有很多，比如 PLONKish，CCS 等，也出现了针对这些算术化的 Nova 变体。本文只讨论 Nova 原始论文，因此本小节详细介绍 R1CS 算术化及其松弛版本。
+Nova 是一个针对 R1CS Arithmetization 的递归证明系统，当然目前电路算术化 Arithmetization 方式还有很多，比如 PLONKish，AIR，CCS 等，也出现了针对这些算术化的 Nova 变体。本文只讨论 Nova 原始论文，因此本小节详细介绍 R1CS 算术化及其松弛版本。
 
 ### 1. Stantard R1CS
 
