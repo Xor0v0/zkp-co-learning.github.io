@@ -391,9 +391,7 @@ $$
 
 一个field 对应一个commitment:
 $$
-
 c_{f_i} = [f_i]_g + [r_{f_i}]_h
-
 $$
 每次commit的时候还需要一个blind factor $r_{f_i}$.
 
@@ -402,9 +400,7 @@ $$
 
 这样的话Sumcheck 协议中的commitment个数就会与要commit的多项式的degree成线性关系。如果把一个多项式所有参数的commitment压缩成一个commitment：
 $$
-
 c_f = \sum_{i = 1}^n [f_i]_{g_i} + [r_f]_h
-
 $$
 
 这样的话就需要多个generator $g_i$ 了，但blind factor 变成了一个$r_f$。
@@ -413,13 +409,11 @@ $$
 
 我们用矩阵第一行的校验为例：
 $$
-
 \begin{aligned}
 
 \lang M_1, \delta_{, 1} \rang = 2 \sdot \delta_{0, 1} + \delta_{1, 1} + \delta_{2, 1} + \delta_{3, 1} = C_0 \\
 
 \end{aligned}
-
 $$
 
 如果把commitment $\delta_{i, 1}$ 压缩成一个commitment $\delta_1$，verifier 就无法直接通过上面的等式来进行校验。这其实就转换成了大家所熟知的IPA 证明，即Inner Product Argument verification。 接下来简单描述一下IPA协议的执行过程
@@ -452,7 +446,6 @@ $$
 prover 采样一个与向量$u$ 等长的向量$d$，对它进行commit；同样也与query 向量$y$ 交互，结果也进行commit，最后同样也发送给verifier
 
 $$
-
 \begin{aligned}
 
 C_d &= \sum_i [d_i]_{g_i} + [r_1]_h \\
@@ -462,7 +455,6 @@ w &= \lang d, y \rang \\
 C_{w} &= [w]_{g} + [r_2]_h \\
 
 \end{aligned}
-
 $$
 
 ### Step Three 
@@ -487,7 +479,6 @@ $$
 根据commitment 同态性质，verifier 验证：
 
 $$
-
 \begin{aligned}
 
 \sum_i [u_i']_{g_i} + [r_{u'}]_h &= e \sdot \sum_i [u_i]_{g_i} + e \sdot [r_u]_h + \sum_i [d_i]_{g_i} + [r_1]_h \\
@@ -501,7 +492,6 @@ $$
 &\overset{?}= e \sdot C_v + C_w + [r_{v'}]_h
 
 \end{aligned}
-
 $$
 
 <br />
@@ -575,16 +565,12 @@ $$
 
 对$Q$ 进行commit：
 $$
-
 C_0 = [s_0]_g + [r_{C_0}]_h \\
-
 $$
 
 commit 之后，prover要证明的变成了：
 $$
-
 \lang \vec{J}, (\vec{\alpha}, X, Y, Z)\rang \overset{?}= \rho_0 \sdot C_0 \\
-
 $$
 
 把两组commitment $\alpha = (\alpha_1, \alpha_2, \alpha_3, \alpha_4, \alpha_5,X, Y, Z)$ 和 $C_0$ 全部发送给verifier。
@@ -699,9 +685,7 @@ $$
 
 GKR with ZK Argument协议的Final Step是要对最下面一层(input + witness) 的某个evaluation 进行证明，我们仍然用GKR with ZK Argument中的例子：
 $$
-
 \widetilde{V}_2(2, (3, 4)) \overset{?}= 2
-
 $$
 
 <br />
@@ -773,9 +757,7 @@ $$
 
 基于MLE 多项式：
 $$
-
 \widetilde{w}(r_1, r_2, ..., r_l) = \sum_{b \in \{0, 1\}^l} w(b) \sdot \prod_{k \in \{1, 2, ..., l\}} \chi_{b_k}(r_k)
-
 $$
 
 <br />
@@ -815,17 +797,13 @@ $$
 
 所以verifier 需要自己计算拿到两个向量(为了简化，实例中$|w| = 4$，所以$2\sqrt{|w|} = 4$其实是没有起到compress作用的，如果$|w| > 4$compress 效果就出来了，读者可以自行举例)：
 $$
-
 L = (\v{\chi}_0, \v{\chi}_1) \\
 R = (\v{\chi}_2, \v{\chi}_3) \\
-
 $$
 
 并计算得到：
 $$
-
 T' = \sum_{k = 1} L_k \sdot T_k
-
 $$
 其中 $T_k$ 为commitment，$L_k$ 为verifier 刚计算好的scalar，最终verifier 拿到一个commitment $T'$。
 
@@ -837,9 +815,7 @@ $$
 
 最终verifier 需要对prover 提供的evaluation的commitment进行验证，这时的验证就变成了标准的IPA 验证：
 $$
-
 \lang \textcolor{red}{T'}, R \rang \overset{?}= \textcolor{red}{\omega}
-
 $$
 
 关于IPA 的执行过程这里就不再赘述了，可以参考上面的IPA Protocol Overview。
